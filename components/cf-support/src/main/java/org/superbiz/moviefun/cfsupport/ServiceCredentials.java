@@ -1,16 +1,19 @@
-package org.superbiz.moviefun;
+package org.superbiz.moviefun.cfsupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Objects;
 
+@Component
 public class ServiceCredentials {
 
     private final String vcapServices;
 
-    public ServiceCredentials(String vcapServices) {
+    public ServiceCredentials(@Value("${vcap.services}") String vcapServices) {
         this.vcapServices = vcapServices;
     }
 

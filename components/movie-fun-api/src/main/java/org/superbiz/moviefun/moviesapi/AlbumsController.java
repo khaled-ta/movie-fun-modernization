@@ -1,4 +1,4 @@
-package org.superbiz.moviefun.albums;
+package org.superbiz.moviefun.moviesapi;
 
 import org.apache.tika.io.IOUtils;
 import org.slf4j.Logger;
@@ -19,31 +19,30 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @Controller
 @RequestMapping("/albums")
 public class AlbumsController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final AlbumsBean albumsBean;
+    private final AlbumsClient albumsClient;
     private final BlobStore blobStore;
 
-    public AlbumsController(AlbumsBean albumsBean, BlobStore blobStore) {
-        this.albumsBean = albumsBean;
+    public AlbumsController(AlbumsClient albumsClient, BlobStore blobStore) {
+        this.albumsClient = albumsClient;
         this.blobStore = blobStore;
     }
 
 
     @GetMapping
     public String index(Map<String, Object> model) {
-        model.put("albums", albumsBean.getAlbums());
+        model.put("albums", albumsClient.getAlbums());
         return "albums";
     }
 
     @GetMapping("/{albumId}")
     public String details(@PathVariable long albumId, Map<String, Object> model) {
-        model.put("album", albumsBean.find(albumId));
+        model.put("album", albumsClient.find(albumId));
         return "albumDetails";
     }
 

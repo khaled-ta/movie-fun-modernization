@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
+
 public class S3Store implements BlobStore {
 
     private final AmazonS3 s3;

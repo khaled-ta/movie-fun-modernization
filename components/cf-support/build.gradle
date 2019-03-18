@@ -1,0 +1,10 @@
+apply from: "../../java.gradle"
+
+dependencies {
+    compile "org.springframework:spring-core:$springVersion"
+    compile "org.springframework:spring-context:$springVersion"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.7.0"
+
+
+
+}
