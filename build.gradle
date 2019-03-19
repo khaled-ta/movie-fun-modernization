@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = "2.0.6.RELEASE"
+        springBootVersion = "1.5.17.RELEASE"
         springVersion = "5.0.10.RELEASE"
         hibernateVersion = "5.2.17.Final"
         slf4jVersion = "1.7.25"
