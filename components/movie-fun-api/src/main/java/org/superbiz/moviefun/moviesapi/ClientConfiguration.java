@@ -10,8 +10,8 @@ import org.springframework.web.client.RestTemplate;
 public class ClientConfiguration {
 
 
-    @Value("${movies.url}") String moviesUrl;
-    @Value("${albums.url}") String albumsUrl;
+    @Value("${movies.url}") private String moviesUrl;
+    @Value("${albums.url}") private String albumsUrl;
 
     @Bean
     public RestOperations restOperations() {
