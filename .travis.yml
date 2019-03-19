@@ -20,7 +20,7 @@ jobs:
       install: skip
       before_script:
         - mysql -uroot < databases/create_databases.sql
-        - ./gradlew testMigrate
+        - ./gradlew flyway
       script: ./gradlew clean build
       before_deploy:
         - git config --local user.name "Travis CI"
