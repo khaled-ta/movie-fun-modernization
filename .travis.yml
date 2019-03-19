@@ -1,0 +1,78 @@
+dist: trusty
+sudo: required
+notifications:
+  email: false
+env:
+  - RELEASE_TAG="release-$TRAVIS_BUILD_NUMBER"
+stages:
+  - build and publish
+  - deploy
+  - migrate
+if: tag IS blank
+
+jobs:
+  include:
+    - stage: build and publish
+      language: java
+      jdk: openjdk8
+      addons:
+        mariadb: '10.2'
+      install: skip
+      before_script:
+        - mysql -uroot < databases/create_databases.sql
+        - ./gradlew testMigrate
+      script: ./gradlew clean build
+      before_deploy:
+        - git config --local user.name "Travis CI"
+        - git config --local user.email "travis@example.com"
+        - git tag -f $RELEASE_TAG
+      deploy:
+        provider: releases
+        api_key: $GITHUB_OAUTH_TOKEN
+        file:
+          - "applications/movie-fun-app/build/libs/movie-fun-app-1.1.0-SNAPSHOT.war"
+          - "applications/album-service/build/libs/album-service-1.1.0-SNAPSHOT.jar"
+          - "applications/movie-service/build/libs/movie-service-1.1.0-SNAPSHOT.jar"
+        skip_cleanup: true
+    - stage: deploy
+      language: java
+      script:
+        - echo "Downloading modern movie-fun-app server $RELEASE_TAG"
+        - wget -P applications/movie-fun-app/build/libs https://github.com/$GITHUB_USERNAME/movie-fun-modernization/releases/download/$RELEASE_TAG/movie-fun-app.war
+      before_deploy:
+        - echo "Deploying movie-fun-app $RELEASE_TAG"
+      deploy: &cloudfoundry
+        provider: cloudfoundry
+        api: $CF_API_URL
+        username: $CF_USERNAME
+        password: $CF_PASSWORD
+        organization: $CF_ORG
+        space: $CF_SPACE
+    - stage: deploy
+      language: bash
+      script:
+        - echo "Downloading movie-service $RELEASE_TAG"
+        - wget -P applications/movie-service/build/libs https://github.com/$GITHUB_USERNAME/movie-fun-modernization/releases/download/$RELEASE_TAG/movie-service.jar
+      before_deploy:
+        - echo "Deploying movie-service $RELEASE_TAG"
+      deploy:
+        <<: *cloudfoundry
+    - stage: deploy
+      language: bash
+      script:
+        - echo "Downloading album-service $RELEASE_TAG"
+        - wget -P applications/album-service/build/libs https://github.com/$GITHUB_USERNAME/movie-fun-modernization/releases/download/$RELEASE_TAG/album-service.jar
+      before_deploy:
+        - echo "Deploying album-service $RELEASE_TAG"
+      deploy:
+        <<: *cloudfoundry
+    - stage: migrate
+      language: java
+      before_install:
+        - wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+        - echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+        - sudo apt-get update
+        - sudo apt-get install cf-cli
+      script:
+        - cf login -a $CF_API_URL -u $CF_USERNAME -p $CF_PASSWORD -o $CF_ORG -s $CF_SPACE
+        - ./gradlew cfMigrate
