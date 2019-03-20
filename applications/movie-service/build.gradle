@@ -7,6 +7,14 @@ group = "org.superbiz"
 version = "1.1.0-SNAPSHOT"
 description = "OpenEJB :: Web Examples :: MovieService"
 
+apply plugin: "io.spring.dependency-management"
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
+}
+
 dependencies {
     compile project(":components:movies")
 
@@ -14,4 +22,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
 
     compile "mysql:mysql-connector-java:$mysqlVersion"
+
+    compile "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:$springSecurityOAuthAutoconfigVersion"
+    compile "io.pivotal.spring.cloud:spring-cloud-sso-connector:$springCloudSsoVersion"
 }

@@ -8,6 +8,14 @@ group = "org.superbiz"
 version = "1.1.0-SNAPSHOT"
 description = "OpenEJB :: Web Examples :: Moviefun"
 
+apply plugin: "io.spring.dependency-management"
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
+}
+
 dependencies {
     compile project(":components:movie-fun-api")
     compile project(":components:cf-support")
@@ -22,4 +30,9 @@ dependencies {
     compile "org.apache.tomcat.embed:tomcat-embed-jasper:8.5.6"
 
     testCompile "junit:junit:$junitVersion"
+
+    compile "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:$springSecurityOAuthAutoconfigVersion"
+    compile "io.pivotal.spring.cloud:spring-cloud-sso-connector:$springCloudSsoVersion"
+    compile "org.springframework.security:spring-security-taglibs"
 }
+
